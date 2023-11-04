@@ -196,15 +196,25 @@ public class StfPuzzleActivity extends AppCompatActivity {
 
 
     private void resetGame() {
-        // Ahora realmente restablecemos a su estado original y actualizamos la vista
-        puzzlePieces = new ArrayList<>(yourOriginalImagePieces);
-        emptySpaceIndex = puzzlePieces.size() - 1;
+        // Restablece el tamaño de la grilla a 3x3 si ha cambiado
+        gridSize = 3;
+        gridView.setNumColumns(gridSize);
+
+        // Restablece las piezas del rompecabezas a su estado original
+        puzzlePieces.clear();
+        puzzlePieces.addAll(yourOriginalImagePieces.subList(0, gridSize * gridSize));
+        emptySpaceIndex = gridSize * gridSize - 1;
         puzzlePieces.set(emptySpaceIndex, null); // Establece el espacio vacío
+
+        // Actualiza el adaptador con la lista restablecida
         gridView.setAdapter(new PuzzleAdapter(this, puzzlePieces, pieceWidth, pieceHeight));
+
         gameStarted = false;
         btnStartGame.setText("Start Game");
         saveGameState(); // Guarda el estado inicial de nuevo
     }
+
+
 
     private boolean isAdjacentToEmptySpace(int position) {
         // Get the row and column of the empty space
