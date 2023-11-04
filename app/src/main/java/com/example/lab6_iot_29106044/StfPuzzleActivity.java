@@ -31,13 +31,13 @@ public class StfPuzzleActivity extends AppCompatActivity {
 
     private static final int IMAGE_CHOOSE = 1000;
     private GridView gridView;
-    private ArrayList<Bitmap> puzzlePieces = new ArrayList<>(); // Inicializa aquí
-    private ArrayList<Bitmap> yourOriginalImagePieces = new ArrayList<>(); // Inicializa aquí
+    private ArrayList<Bitmap> puzzlePieces = new ArrayList<>();
+    private ArrayList<Bitmap> yourOriginalImagePieces = new ArrayList<>();
     private Button btnStartGame;
     private int gridSize = 3;
-    private int emptySpaceIndex=-1; // Indice del espacio vacío
+    private int emptySpaceIndex=-1;
     private boolean gameStarted = false;
-    private int pieceWidth, pieceHeight; // Dimensiones de las piezas del rompecabezas
+    private int pieceWidth, pieceHeight;
 
     private void chooseImage() {
         Intent chooseImageIntent = new Intent(Intent.ACTION_PICK,
@@ -45,14 +45,12 @@ public class StfPuzzleActivity extends AppCompatActivity {
         startActivityForResult(chooseImageIntent, IMAGE_CHOOSE);
     }
 
-    // Sobrescribe este método para manejar la imagen elegida
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == IMAGE_CHOOSE && resultCode == RESULT_OK && data != null) {
             Uri selectedImage = data.getData();
             try {
-                // Antes de crear nuevas piezas, limpiamos las anteriores
                 puzzlePieces.clear();
                 if (yourOriginalImagePieces != null) {
                     yourOriginalImagePieces.clear();
@@ -78,19 +76,17 @@ public class StfPuzzleActivity extends AppCompatActivity {
         gridView = findViewById(R.id.gridViewPuzzle);
         btnStartGame = findViewById(R.id.btnStartGame);
 
-        Button btnChooseImage = findViewById(R.id.btnChooseImage); // Make sure you have a button with this ID in your layout
+        Button btnChooseImage = findViewById(R.id.btnChooseImage);
         btnChooseImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                chooseImage(); // Call chooseImage when the button is clicked
+                chooseImage();
             }
         });
 
         gridView.setNumColumns(gridSize);
         puzzlePieces = new ArrayList<>();
         yourOriginalImagePieces = new ArrayList<>();
-        // This assumes the player has already chosen an image and it's stored locally
-        // For actual image selection from gallery, you'll need to implement an image chooser
         if (!yourOriginalImagePieces.isEmpty()) {
             loadSavedGame();
         }
@@ -113,9 +109,9 @@ public class StfPuzzleActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (isAdjacentToEmptySpace(position)) {
                     swap(position, emptySpaceIndex);
-                    emptySpaceIndex = position; // Actualiza el índice del espacio vacío
-                    ((BaseAdapter) gridView.getAdapter()).notifyDataSetChanged(); // Notifica al adaptador que los datos han cambiado
-                    checkForWin(); // Verifica si el juego ha sido ganado después de cada movimiento
+                    emptySpaceIndex = position;
+                    ((BaseAdapter) gridView.getAdapter()).notifyDataSetChanged();
+                    checkForWin();
                 }
             }
         });
@@ -127,7 +123,6 @@ public class StfPuzzleActivity extends AppCompatActivity {
         pieceWidth = image.getWidth() / gridSize;
         pieceHeight = image.getHeight() / gridSize;
 
-        // Asegurarse de que las listas estén vacías antes de agregar nuevas piezas
         puzzlePieces.clear();
         yourOriginalImagePieces.clear();
 
@@ -142,17 +137,12 @@ public class StfPuzzleActivity extends AppCompatActivity {
             yCoord += pieceHeight;
         }
 
-        // Remove the bottom right corner piece to leave space on the board
-        // This is done before adding the pieces to the original list to ensure the last piece is null
         Bitmap lastPiece = puzzlePieces.remove(piecesNumber - 1);
-        puzzlePieces.add(null); // Add a null piece to represent the empty space
+        puzzlePieces.add(null);
 
-        // Add the non-null pieces to the original list
         yourOriginalImagePieces.addAll(puzzlePieces);
-        // Add the last piece (which was removed) at the end of the original pieces list
         yourOriginalImagePieces.add(lastPiece);
 
-        // Set up the adapter for the GridView
         gridView.setAdapter(new PuzzleAdapter(this, puzzlePieces, pieceWidth, pieceHeight));
     }
 
@@ -161,31 +151,26 @@ public class StfPuzzleActivity extends AppCompatActivity {
     private void shufflePuzzle() {
         if (puzzlePieces.size() == 0) return;
         Random random = new Random();
-        // El índice del espacio vacío debe ser el último elemento en la lista de piezas
+
         emptySpaceIndex = puzzlePieces.size() - 1;
 
-        // Definimos un número de pasos para barajar basado en el tamaño del rompecabezas
         int shuffleSteps = gridSize * gridSize * 2;
 
         for (int step = 0; step < shuffleSteps; step++) {
             List<Integer> validMoves = new ArrayList<>();
 
-            // Verificamos si podemos mover una ficha hacia el espacio vacío desde arriba, abajo, izquierda o derecha
-            if (emptySpaceIndex - gridSize >= 0) validMoves.add(emptySpaceIndex - gridSize); // Mover desde arriba
-            if (emptySpaceIndex + gridSize < puzzlePieces.size()) validMoves.add(emptySpaceIndex + gridSize); // Mover desde abajo
-            if (emptySpaceIndex % gridSize > 0) validMoves.add(emptySpaceIndex - 1); // Mover desde la izquierda
-            if (emptySpaceIndex % gridSize < gridSize - 1) validMoves.add(emptySpaceIndex + 1); // Mover desde la derecha
+            if (emptySpaceIndex - gridSize >= 0) validMoves.add(emptySpaceIndex - gridSize);
+            if (emptySpaceIndex + gridSize < puzzlePieces.size()) validMoves.add(emptySpaceIndex + gridSize);
+            if (emptySpaceIndex % gridSize > 0) validMoves.add(emptySpaceIndex - 1);
+            if (emptySpaceIndex % gridSize < gridSize - 1) validMoves.add(emptySpaceIndex + 1);
 
-            // Elegimos un movimiento aleatorio de los movimientos válidos y realizamos el intercambio
             int toSwapWithIndex = validMoves.get(random.nextInt(validMoves.size()));
             Collections.swap(puzzlePieces, emptySpaceIndex, toSwapWithIndex);
-            emptySpaceIndex = toSwapWithIndex; // Actualizamos el índice del espacio vacío
+            emptySpaceIndex = toSwapWithIndex;
         }
 
-        // Refrescamos el GridView para mostrar el rompecabezas barajado
         gridView.invalidateViews();
 
-        // Guardamos el estado barajado
         saveGameState();
     }
 
@@ -196,56 +181,50 @@ public class StfPuzzleActivity extends AppCompatActivity {
 
 
     private void resetGame() {
-        // Restablece el tamaño de la grilla a 3x3 si ha cambiado
         gridSize = 3;
         gridView.setNumColumns(gridSize);
 
-        // Restablece las piezas del rompecabezas a su estado original
         puzzlePieces.clear();
         puzzlePieces.addAll(yourOriginalImagePieces.subList(0, gridSize * gridSize));
         emptySpaceIndex = gridSize * gridSize - 1;
-        puzzlePieces.set(emptySpaceIndex, null); // Establece el espacio vacío
+        puzzlePieces.set(emptySpaceIndex, null);
 
-        // Actualiza el adaptador con la lista restablecida
         gridView.setAdapter(new PuzzleAdapter(this, puzzlePieces, pieceWidth, pieceHeight));
 
         gameStarted = false;
         btnStartGame.setText("Start Game");
-        saveGameState(); // Guarda el estado inicial de nuevo
+        saveGameState();
     }
 
 
 
     private boolean isAdjacentToEmptySpace(int position) {
-        // Get the row and column of the empty space
+
         int emptyRow = emptySpaceIndex / gridSize;
         int emptyCol = emptySpaceIndex % gridSize;
 
-        // Get the row and column of the clicked position
         int clickedRow = position / gridSize;
         int clickedCol = position % gridSize;
 
-        // Check if the clicked position is adjacent to the empty space
         return (emptyRow == clickedRow && Math.abs(emptyCol - clickedCol) == 1) ||
                 (emptyCol == clickedCol && Math.abs(emptyRow - clickedRow) == 1);
     }
 
     private void checkForWin() {
         for (int i = 0; i < puzzlePieces.size() - 1; i++) {
-            // Assuming the original image pieces are in the correct order from 0 to size - 2
-            // If any piece is not in the correct position, return
+
             if (puzzlePieces.get(i) != yourOriginalImagePieces.get(i)) {
                 return;
             }
         }
-        // If all pieces are in the correct position, the user has won
+
         Toast.makeText(this, "Se culminó el juego", Toast.LENGTH_SHORT).show();
-        // Reset the game or navigate the user to a new screen
+
     }
 
     private void saveGameState() {
         if (puzzlePieces.isEmpty() || yourOriginalImagePieces.isEmpty()) return;
-        // Guarda el estado actual del rompecabezas
+
         SharedPreferences prefs = getSharedPreferences("StfPuzzle", MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
@@ -260,7 +239,7 @@ public class StfPuzzleActivity extends AppCompatActivity {
         editor.apply();
     }
     private void loadSavedGame() {
-        // Carga el estado guardado del rompecabezas
+
         SharedPreferences prefs = getSharedPreferences("StfPuzzle", MODE_PRIVATE);
         String savedState = prefs.getString("puzzleState", null);
         emptySpaceIndex = prefs.getInt("emptySpaceIndex", -1);
