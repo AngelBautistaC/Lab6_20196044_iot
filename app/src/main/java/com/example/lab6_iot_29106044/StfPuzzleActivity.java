@@ -10,6 +10,8 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
@@ -40,8 +42,9 @@ public class StfPuzzleActivity extends AppCompatActivity {
     private int pieceWidth, pieceHeight;
 
     private void chooseImage() {
-        Intent chooseImageIntent = new Intent(Intent.ACTION_PICK,
-                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent chooseImageIntent = new Intent(Intent.ACTION_PICK);
+        chooseImageIntent.setType("image/*");
+        chooseImageIntent.putExtra(Intent.EXTRA_MIME_TYPES, new String[] {"image/jpeg", "image/png","image/jpg"});
         startActivityForResult(chooseImageIntent, IMAGE_CHOOSE);
     }
 
@@ -50,6 +53,7 @@ public class StfPuzzleActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == IMAGE_CHOOSE && resultCode == RESULT_OK && data != null) {
             Uri selectedImage = data.getData();
+            btnStartGame.setEnabled(true);
             try {
                 puzzlePieces.clear();
                 if (yourOriginalImagePieces != null) {
@@ -77,6 +81,7 @@ public class StfPuzzleActivity extends AppCompatActivity {
         btnStartGame = findViewById(R.id.btnStartGame);
 
         Button btnChooseImage = findViewById(R.id.btnChooseImage);
+        btnStartGame.setEnabled(false);
         btnChooseImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,10 +124,21 @@ public class StfPuzzleActivity extends AppCompatActivity {
 
 
     private void createPuzzlePieces(Bitmap image) {
-        int piecesNumber = gridSize * gridSize;
-        pieceWidth = image.getWidth() / gridSize;
-        pieceHeight = image.getHeight() / gridSize;
+        btnStartGame.setEnabled(true);
+        // Tamaño deseado en dp
+        int desiredPieceSizeDp = 55;
+        // Conversión de dp a píxeles
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        int pieceSizePixels = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, desiredPieceSizeDp, displayMetrics);
+        pieceWidth = pieceSizePixels;
+        pieceHeight = pieceSizePixels;
 
+        // Redimensionar la imagen para que se ajuste al tamaño total del puzzle basado en el número de piezas
+        int imageWidth = pieceWidth * gridSize;
+        int imageHeight = pieceHeight * gridSize;
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(image, imageWidth, imageHeight, false);
+
+        // Crear las piezas del puzzle
         puzzlePieces.clear();
         yourOriginalImagePieces.clear();
 
@@ -130,20 +146,22 @@ public class StfPuzzleActivity extends AppCompatActivity {
         for (int row = 0; row < gridSize; row++) {
             int xCoord = 0;
             for (int col = 0; col < gridSize; col++) {
-                Bitmap pieceBitmap = Bitmap.createBitmap(image, xCoord, yCoord, pieceWidth, pieceHeight);
+                Bitmap pieceBitmap = Bitmap.createBitmap(scaledBitmap, xCoord, yCoord, pieceWidth, pieceHeight);
                 puzzlePieces.add(pieceBitmap);
                 xCoord += pieceWidth;
             }
             yCoord += pieceHeight;
         }
 
-        Bitmap lastPiece = puzzlePieces.remove(piecesNumber - 1);
+        // El último espacio es el vacío para el puzzle
+        Bitmap lastPiece = puzzlePieces.remove(puzzlePieces.size() - 1);
         puzzlePieces.add(null);
 
         yourOriginalImagePieces.addAll(puzzlePieces);
         yourOriginalImagePieces.add(lastPiece);
 
         gridView.setAdapter(new PuzzleAdapter(this, puzzlePieces, pieceWidth, pieceHeight));
+
     }
 
 

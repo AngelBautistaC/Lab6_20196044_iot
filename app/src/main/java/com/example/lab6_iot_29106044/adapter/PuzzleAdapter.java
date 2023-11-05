@@ -2,6 +2,7 @@ package com.example.lab6_iot_29106044.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -42,13 +43,17 @@ public class PuzzleAdapter extends BaseAdapter {
         ImageView imageView;
         if (convertView == null) {
             imageView = new ImageView(context);
-            imageView.setLayoutParams(new GridView.LayoutParams(pieceWidth, pieceHeight));
+            // Cambia pieceWidth y pieceHeight a valores basados en dp
+            DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+            int dpWidth = Math.round(pieceWidth / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+            int dpHeight = Math.round(pieceHeight / (displayMetrics.ydpi / DisplayMetrics.DENSITY_DEFAULT));
+            imageView.setLayoutParams(new GridView.LayoutParams(dpWidth, dpHeight));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         } else {
             imageView = (ImageView) convertView;
         }
 
         imageView.setImageBitmap(puzzlePieces.get(position));
-        return imageView;
-    }
+        return imageView;}
+
 }

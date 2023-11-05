@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:padding="16dp"
     android:gravity="center"
-    android:background="#FFF">
+    android:background="@drawable/background_gradient">
 
     <!-- Vista para mostrar el rompecabezas -->
     <GridView
@@ -14,22 +14,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:numColumns="3"
-    android:verticalSpacing="10dp"
-    android:horizontalSpacing="10dp"
+    android:verticalSpacing="1dp"
+    android:horizontalSpacing="1dp"
     android:gravity="center"/>
 
     <!-- Botón para comenzar el juego -->
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
+
         android:id="@+id/btnStartGame"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:text="Comenzar juego"
         android:layout_marginBottom="10dp"
 
         android:background="@drawable/playful_button_selector"/>
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
+
         android:id="@+id/btnChooseImage"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:text="Escojer Imagen"
         android:background="@drawable/playful_button_selector"/>

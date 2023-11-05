@@ -4,13 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@drawable/background_gradient">
+    android:padding="16dp">
+
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="MemoryClassic"
+        android:text="Titulo del juego"
         android:textSize="24sp"
         android:layout_gravity="center_horizontal"/>
 
@@ -21,34 +21,16 @@
         android:text="Total de imagenes seleccionadas: 0"
         android:layout_marginTop="20dp"/>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:background="@drawable/playful_button_selector"
+    <Button
         android:id="@+id/btnAddImages"
-        android:layout_width="150dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Agregar Imágenes"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"/>
-    <androidx.appcompat.widget.AppCompatButton
-        android:background="@drawable/playful_button_selector"
-        android:id="@+id/btnHelp"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:text="Ayuda"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"/>
-    <androidx.appcompat.widget.AppCompatButton
-        android:background="@drawable/playful_button_selector"
-        android:id="@+id/btnShuffle"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:text="Aleatorizar"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"/>
-    <androidx.appcompat.widget.AppCompatButton
-        android:background="@drawable/playful_button_selector"
+    <Button
         android:id="@+id/btnStartGame"
-        android:layout_width="150dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Comenzar Juego"
         android:layout_gravity="center_horizontal"
